@@ -27,7 +27,7 @@ elif direction == 'right':
 while StepCounter < steps:
   gpio.output(1, True)
   gpio.output(1, False)
-  StepCounter=+=1
+  StepCounter += 1
   time.sleep(delay)
 
   gpio.cleanup()
