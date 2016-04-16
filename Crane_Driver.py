@@ -1,70 +1,33 @@
 #!/usr/bin/env python3
 
-import RPi.GPIO as GPIO
+import RPi.GPIO as gpio
 import time
+import sys
 
-# Variables
+
+try:
+  direction=sys.argv[1]
+  steps = int(float(sys.argv[2]))
+except:
+  steps = 0
+
+print("You told me to turn %s %s steps.") % (direction, steps)
 
 delay = 0.0055
-steps = 500
+StepCounter = 0
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
+gpio.setup(1, gpio.OUT)
+gpio.setup(2, gpio.OUT)
 
-# Enable GPIO pins for  ENA and ENB for stepper
+if direction == 'left':
+  gpio.output(2, True)
+elif direction == 'right':
+  gpio.output(2, False)
 
-enable_a = 18
-enable_b = 22
+while StepCounter < steps:
+  gpio.output(1, True)
+  gpio.output(1, False)
+  StepCounter=+=1
+  time.sleep(delay)
 
-# Enable pins for IN1-4 to control step sequence
-
-coil_A_1_pin = 23
-coil_A_2_pin = 24
-coil_B_1_pin = 4
-coil_B_2_pin = 17
-
-# Set pin states
-
-GPIO.setup(enable_a, GPIO.OUT)
-GPIO.setup(enable_b, GPIO.OUT)
-GPIO.setup(coil_A_1_pin, GPIO.OUT)
-GPIO.setup(coil_A_2_pin, GPIO.OUT)
-GPIO.setup(coil_B_1_pin, GPIO.OUT)
-GPIO.setup(coil_B_2_pin, GPIO.OUT)
-
-# Set ENA and ENB to high to enable stepper
-
-GPIO.output(enable_a, True)
-GPIO.output(enable_b, True)
-
-# Function for step sequence
-
-def setStep(w1, w2, w3, w4):
-  GPIO.output(coil_A_1_pin, w1)
-  GPIO.output(coil_A_2_pin, w2)
-  GPIO.output(coil_B_1_pin, w3)
-  GPIO.output(coil_B_2_pin, w4)
-
-# loop through step sequence based on number of steps
-
-for i in range(0, steps):
-    setStep(1,0,1,0)
-    time.sleep(delay)
-    setStep(0,1,1,0)
-    time.sleep(delay)
-    setStep(0,1,0,1)
-    time.sleep(delay)
-    setStep(1,0,0,1)
-    time.sleep(delay)
-
-# Reverse previous step sequence to reverse motor direction
-
-for i in range(0, steps):
-    setStep(1,0,0,1)
-    time.sleep(delay)
-    setStep(0,1,0,1)
-    time.sleep(delay)
-    setStep(0,1,1,0)
-    time.sleep(delay)
-    setStep(1,0,1,0)
-    time.sleep(delay)
+  gpio.cleanup()
