@@ -6,7 +6,9 @@ import sys
 
 
 try:
-  direction=sys.argv[1]
+  global direction
+  global steps
+  direction = sys.argv[1]
   steps = int(float(sys.argv[2]))
 except:
   steps = 0
